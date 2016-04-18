@@ -2,9 +2,19 @@
 "use strict"
 const exec = require("child_process").exec;
 const fs = require("fs");
-const tmp = require("tmp");
 const path = require("path");
+
 const readPkg = require("read-package-json");
+const tmp = require("tmp");
+const rimraf = require("rimraf");
+
+tmp.setGracefulCleanup();
+
+
+/*
+TODO: When topLevel param is specified, we should download the package using http then run npm install on it.
+  How will this integrate with auth and custom registries and such?
+*/
 
 process.stdin.on("data", (chunk) => {
   // node foo.js "/dest"
@@ -29,13 +39,7 @@ process.stdin.on("data", (chunk) => {
   }
   
   let cmdLine = 'npm install --quiet';
-  
-  // FIXME: This does not work.  Still installs target under node_modules.
-  let topLevel = data.params && data.params.topLevel;
-  if (topLevel) {
-    cmdLine += ' --prefix \"' + dest + '\"';
-  }
-  
+    
   if (registry) {
     cmdLine += ' --registry \"' + registry + '\"'; 
   }
@@ -44,8 +48,15 @@ process.stdin.on("data", (chunk) => {
   
   cmdLine += ' \"' + pkg + '\"';
   
-  console.log(cmdLine);
-  exec(cmdLine, {cwd: dest}, (err, stdout, stderr) => {
+  let topLevel = data.params && data.params.topLevel;
+  
+  let installTo = dest;
+  if (topLevel) {
+    const dirData = tmp.dirSync();
+    installTo = dirData.name;
+  }
+  
+  exec(cmdLine, {cwd: installTo}, (err, stdout, stderr) => {
     if (err) {
       console.error(err.stack);
       process.exit(1);
@@ -61,6 +72,27 @@ process.stdin.on("data", (chunk) => {
     // }
     
     let pkgJsonPath;
+    
+    if (topLevel) {
+      // TODO: How does case sensitivity work in node modules.  If not case sensitive,
+      //  using pkg in folder names will cause issues.
+      
+      
+      // Copy specific package.
+      // FIXME: This leaves behind bits in node_modules/.bin if the package
+      //  defines any.
+      const packagePath = path.join(installTo, "node_modules", pkg);
+      moveAll(packagePath, dest);
+      fs.rmdirSync(packagePath);
+      
+      // Copy rest of the dependencies.
+      // TODO: May cause dependency clashes?  Shouldn't in npm 3,
+      //  as it usually treats folder as cannon what we are installing, and clashes go into the dep's folder.
+      //  Is this consistent?  Need to confirm...
+      const depPath = path.join(installTo, "node_modules");
+      moveAll(depPath, path.join(dest, "node_modules"));
+    }
+    
     if (topLevel) {
       pkgJsonPath = path.join(dest, "package.json");
     }
@@ -93,4 +125,30 @@ function removeQuotes(str) {
     return str.replace("\"", "");
   }
   return null;
+}
+
+function moveAll(src, dest) {
+  let destExists = false;
+  try {
+    if (fs.statSync(dest).isDirectory()) {
+      destExists = true;
+    }
+  }
+  catch(e) {
+    if (e.code !== "ENOENT") {
+      throw e;
+    }
+  }
+  
+  if (!destExists) {
+    fs.mkdirSync(dest);
+  }
+  
+  const targets = fs.readdirSync(src);
+  for(let i = 0; i < targets.length; i++) {
+    const target = targets[i];
+    const p = path.join(src, target);
+    const d = path.join(dest, target);
+    fs.renameSync(p, d);
+  }
 }

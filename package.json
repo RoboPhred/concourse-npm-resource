@@ -4,6 +4,8 @@
     "test": "node -c *.js"
   },
   "dependencies": {
-    "read-package-json": "^2.0.3"
+    "read-package-json": "^2.0.3",
+    "rimraf": "^2.5.2",
+    "tmp": "0.0.28"
   }
 }
