@@ -45,9 +45,13 @@ resources:
 
 Checks for versions of "source.package" at the given registry.
 
-### `in`: Not Yet Implemented
+### `in`: Pulls a package from npm
 
-In the future, this might perform an `npm install` in a directory containing a package.json.
+Fetches a package from npm.
+
+#### Parameters
+
+* `topLevel`: *Optional.* Set to `true` to install the package at the top level of the destination.  Otherwise, the package will be installed into node_modules.
 
 ### `out`: Publish an NPM Package
 
