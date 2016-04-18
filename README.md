@@ -32,14 +32,18 @@ resources:
 - name: package
   type: npm
   source:
+    package: {{npm_package_name}}
     username: {{npm_token}}
+    registry: {{npm_registry}}
 ```
 
 ## Behavior
 
-### `check`: Not Yet Implemented
+### `check`: Checks for versions of a specific node package
 
-In the future, this may monitor a directory containing a package.json for any outdated packages.
+Checks for versions of "source.package" at the given registry.
+source.package: The package to check versions for.
+source.registry [optional]: The registry to check.  Defaults to using the npm configured default.
 
 ### `in`: Not Yet Implemented
 
