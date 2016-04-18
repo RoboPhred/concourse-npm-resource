@@ -48,7 +48,7 @@ process.stdin.on("data", (chunk) => {
   
   cmdLine += ' \"' + pkg + '\"';
   
-  let topLevel = data.params && data.params.topLevel;
+  let topLevel = data.params && data.params.top_level;
   
   let installTo = dest;
   if (topLevel) {

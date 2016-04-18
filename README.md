@@ -51,7 +51,7 @@ Fetches a package from npm.
 
 #### Parameters
 
-* `topLevel`: *Optional.* Set to `true` to install the package at the top level of the destination.  Otherwise, the package will be installed into node_modules.
+* `top_level`: *Optional.* Set to `true` to install the package at the top level of the destination.  Otherwise, the package will be installed into node_modules.  Default `false`.
 
 ### `out`: Publish an NPM Package
 
