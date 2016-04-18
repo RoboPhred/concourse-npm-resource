@@ -2,5 +2,8 @@
   "private": true,
   "scripts": {
     "test": "node -c *.js"
+  },
+  "dependencies": {
+    "read-package-json": "^2.0.3"
   }
 }
