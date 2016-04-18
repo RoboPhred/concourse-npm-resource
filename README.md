@@ -37,13 +37,16 @@ resources:
     registry: {{npm_registry}}
 ```
 
+#### Configuration
+
+* `package`: The package to check versions for.
+* `registry`: *Optional.* The registry to use.  Defaults to using the npm configured default.
+
 ## Behavior
 
 ### `check`: Checks for versions of a specific node package
 
 Checks for versions of "source.package" at the given registry.
-source.package: The package to check versions for.
-source.registry [optional]: The registry to check.  Defaults to using the npm configured default.
 
 ### `in`: Not Yet Implemented
 
