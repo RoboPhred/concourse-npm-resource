@@ -15,7 +15,9 @@ resource_types:
 
 ## Source Configuration
 
+* `package`: The name of the npm package.  Used for `check` and `in`.
 * `token`: *Required.* The NPM access token found in your .npmrc.
+* `registry`: *Optional.* The registry to use.  Defaults to using the npm configured default.
 
 Look for a line like the following:
 
@@ -36,11 +38,6 @@ resources:
     username: {{npm_token}}
     registry: {{npm_registry}}
 ```
-
-#### Configuration
-
-* `package`: The package to check versions for.
-* `registry`: *Optional.* The registry to use.  Defaults to using the npm configured default.
 
 ## Behavior
 
